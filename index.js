@@ -7,6 +7,8 @@ const app = express()
  */
 const f_welcome = require('./fulfillments/default/welcome')
 const f_fallback = require('./fulfillments/default/fallback')
+const f_weather = require('./fulfillments/weather')
+
 // Todo: create and require a fulfillment module for each custom intent
 // Hint: use the directory fulfillments/custom
 
@@ -20,6 +22,8 @@ app.post('/', express.json(), (req, res) => {
    */
   intentMap.set('Default Welcome Intent', f_welcome.fulfillment)
   intentMap.set('Default Fallback Intent', f_fallback.fulfillment)
+  intentMap.set('Check weather', f_weather.fulfillment)
+
   // Todo: connect each custom intent with custom fulfillment modules
   // Hint: create a intent in Dialogflow first
 
