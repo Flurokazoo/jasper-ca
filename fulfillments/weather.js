@@ -53,34 +53,19 @@ module.exports = {
                                     latLng.latitude = response.data[0].latitudeAirport
                                     latLng.longitude = response.data[0].longitudeAirport
                                 })
-
-                            // return axios.get(`http://aviation-edge.com/v2/public/timetable?key=` + config.flightApiKey + `&iataCode=` + iataAirport + `&type=` + location + `&flight_iata=` + flightNoFormatted)
-                            //     .then((response) => {
-                            //         console.log('de l;even')
-                            //         //flightData = response.data.title
-                            //         agent.add(
-                            //             `deze leven is money money money`
-                            //         )
-                            //     })
-
-
                         }
 
                         return axios.get(`http://aviation-edge.com/v2/public/flights?key=` + config.flightApiKey + `&flightIata=` + flightNoFormatted)
                                 .then((response) => {
-                                    console.log('de l;even')
                                     //flightData = response.data.title
                                     agent.add(
-                                        `deze leven is money money money`
+                                        `FINAL RESPONSE HERE`
                                     )
                                 })
 
                     })
             }
-        }
-        agent.add(
-            `hallo`
-        )
+        }    
     }
 
 }
