@@ -25,7 +25,7 @@ module.exports = {
                 agent.add(`That's a lot of data. Please either ask me the weather for your flight or by location. Thank you :)`)
             } else {
                 //Get data regarding the provided flight number
-                axios.get(`http://aviation-edge.com/v2/public/flights?key=` + config.flightApiKey + `&flightIata=` + flightNoFormatted)
+                return axios.get(`http://aviation-edge.com/v2/public/flights?key=` + config.flightApiKey + `&flightIata=` + flightNoFormatted)
                     .then((response) => {
 
                         //Declaration of variable for the IATA number of an airport (this acts as a unique identifier)
@@ -54,19 +54,33 @@ module.exports = {
                                     latLng.longitude = response.data[0].longitudeAirport
                                 })
 
-                            return axios.get(`http://aviation-edge.com/v2/public/timetable?key=` + config.flightApiKey + `&iataCode=` + iataAirport + `&type=` + location + `&flight_iata=` + flightNoFormatted)
+                            // return axios.get(`http://aviation-edge.com/v2/public/timetable?key=` + config.flightApiKey + `&iataCode=` + iataAirport + `&type=` + location + `&flight_iata=` + flightNoFormatted)
+                            //     .then((response) => {
+                            //         console.log('de l;even')
+                            //         //flightData = response.data.title
+                            //         agent.add(
+                            //             `deze leven is money money money`
+                            //         )
+                            //     })
+
+
+                        }
+
+                        return axios.get(`http://aviation-edge.com/v2/public/flights?key=` + config.flightApiKey + `&flightIata=` + flightNoFormatted)
                                 .then((response) => {
-                                    console.log('check')
+                                    console.log('de l;even')
                                     //flightData = response.data.title
                                     agent.add(
-                                        `http://aviation-edge.com/v2/public/timetable?key=` + config.flightApiKey + `&iataCode=` + iataAirport + `&type=` + location + `&flight_iata=` + flightNoFormatted
+                                        `deze leven is money money money`
                                     )
                                 })
-                        }
 
                     })
             }
         }
+        agent.add(
+            `hallo`
+        )
     }
 
 }
