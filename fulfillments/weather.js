@@ -23,16 +23,6 @@ module.exports = {
                     })
             }
         }
-
-        // return axios.get('https://jsonplaceholder.typicode.com/todos/1')
-        //     .then((response) => {
-        //         agent.add(
-        //             response.data.title
-        //         )
-        //     })
-
-
-
     }
 
 }
