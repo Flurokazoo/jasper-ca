@@ -2,11 +2,11 @@
  * Intent: Default Fallback Intent
  * Fulfillment: default
  */
+const axios = require('axios')
 
 module.exports = {
 
     fulfillment: function (agent) {
-        const axios = require('axios')
 
 
         const [city, time, location, flightNo, date] = [agent.parameters['geo-city'], agent.parameters['time'], agent.parameters['location'], agent.parameters['flight-number'], agent.parameters['date']]
