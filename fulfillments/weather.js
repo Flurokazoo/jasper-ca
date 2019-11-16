@@ -9,8 +9,10 @@ module.exports = {
 
     fulfillment: function (agent) {
 
+        console.log(config.flightApiKey)
 
-        const [city, time, location, flightNo, date] = [agent.parameters['geo-city'], agent.parameters['time'], agent.parameters['location'], agent.parameters['flight-number'], agent.parameters['date']]
+        const [city, time, flightNo, date] = [agent.parameters['geo-city'], agent.parameters['time'], agent.parameters['flight-number'], agent.parameters['date']]
+        let location = agent.parameters['location']
         const flightNoFormatted = flightNo.replace(/\s/g, "")
         let latLng = {}
 
@@ -20,14 +22,15 @@ module.exports = {
             } else {
                 return axios.get(`http://aviation-edge.com/v2/public/flights?key=` + config.flightApiKey + `&flightIata=` + flightNoFormatted)
                     .then((response) => {
+                        let iataAirport
                         if (location == `current location`) {
                             latLng.latitude = response.data[0].geography.latitude
                             latLng.longitude = response.data[0].geography.longitude
                         } else {
-                            let iataAirport
                             if (location == `departure`) {
                                 iataAirport = response.data[0].departure.iataCode
                             } else {
+                                location = `arrival`
                                 iataAirport = response.data[0].arrival.iataCode
                             }
                             axios.get(`https://aviation-edge.com/v2/public/airportDatabase?key=` + config.flightApiKey + `&codeIataAirport=` + iataAirport)
