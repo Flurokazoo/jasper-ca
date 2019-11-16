@@ -14,7 +14,7 @@ module.exports = {
 
         if (flightNo) {
             if (city || time || date) {
-                agent.add('please be more specific')
+                agent.add(`That's a lot of data. Please either ask me the weather for your flight or by location. Thank you :)`)
             } else {
                 return axios.get('https://jsonplaceholder.typicode.com/todos/1')
                     .then((response) => {
@@ -22,7 +22,6 @@ module.exports = {
                         agent.add(flightData)
                     })
             }
-
         }
 
         // return axios.get('https://jsonplaceholder.typicode.com/todos/1')
