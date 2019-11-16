@@ -10,7 +10,8 @@ module.exports = {
 
 
         const [city, time, location, flightNo, date] = [agent.parameters['geo-city'], agent.parameters['time'], agent.parameters['location'], agent.parameters['flight-number'], agent.parameters['date']]
-        let flightData
+        const flightNoFormatted = flightNo.replace(/\s/g, "")
+        let latLng = {}
 
         if (flightNo) {
             if (city || time || date) {
