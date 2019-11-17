@@ -45,11 +45,13 @@ module.exports = {
                             //If either departure of arrival is selected an additional API call needs to be made to determine the location of the airport
                             if (location == `departure`) {
                                 iataAirport = response.data[0].departure.iataCode
+                                weatherMethod = `current`
+
                             } else {
                                 location = `arrival`    //If the location entity isn't provided, it will default to the arrival location
                                 iataAirport = response.data[0].arrival.iataCode
+                                weatherMethod = `forecast/hourly`
                             }
-                            weatherMethod = `forecast/hourly`
 
                             //Get data about either the departure or arrival airport
                             axios.get(`https://aviation-edge.com/v2/public/airportDatabase?key=` + config.flightApiKey + `&codeIataAirport=` + iataAirport)
@@ -57,20 +59,29 @@ module.exports = {
                                     //Set latitude and longitude for airport
                                     latLng.latitude = response.data[0].latitudeAirport
                                     latLng.longitude = response.data[0].longitudeAirport
+                                    console.log(response.data)
+                                    if (location == `arrival`) {
+                                        axios.get(`http://aviation-edge.com/v2/public/timetable?key=` + config.flightApiKey + `&iataCode=` + iataAirport + `&type=arrival&flight_iata=` + flightNoFormatted)
+                                            .then((response) => {
+                                                //flightData = response.data.title
+                                                console.log(moment(response.data[0].arrival.estimatedTime).unix())
+                                                console.log(moment())
+                                            })
+                                    }
                                 })
                         }
 
                         return axios.get(`http://aviation-edge.com/v2/public/flights?key=` + config.flightApiKey + `&flightIata=` + flightNoFormatted)
-                                .then((response) => {
-                                    //flightData = response.data.title
-                                    agent.add(
-                                        `FINAL RESPONSE HERE`
-                                    )
-                                })
+                            .then((response) => {
+                                //flightData = response.data.title
+                                agent.add(
+                                    `Latitude: ` + latLng.latitude + `, Longitude: ` + latLng.longitude
+                                )
+                            })
 
                     })
             }
-        }    
+        }
     }
 
 }
