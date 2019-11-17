@@ -30,12 +30,15 @@ module.exports = {
 
                         //Declaration of variable for the IATA number of an airport (this acts as a unique identifier)
                         let iataAirport
+                        //Declaration of variable for the type of weather method (either future prediction current)
+                        let weatherMethod
 
                         //Determine the asked location of the user: Departure airport, arrival airport or the current location of the flight
                         if (location == `current location`) {
                             //Set latitude and longitude for current location
                             latLng.latitude = response.data[0].geography.latitude
                             latLng.longitude = response.data[0].geography.longitude
+                            weatherMethod = `current`
                         } else {
 
                             //If either departure of arrival is selected an additional API call needs to be made to determine the location of the airport
@@ -45,6 +48,7 @@ module.exports = {
                                 location = `arrival`    //If the location entity isn't provided, it will default to the arrival location
                                 iataAirport = response.data[0].arrival.iataCode
                             }
+                            weatherMethod = `forecast/hourly`
 
                             //Get data about either the departure or arrival airport
                             axios.get(`https://aviation-edge.com/v2/public/airportDatabase?key=` + config.flightApiKey + `&codeIataAirport=` + iataAirport)
