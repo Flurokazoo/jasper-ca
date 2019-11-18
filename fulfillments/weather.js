@@ -167,7 +167,7 @@ module.exports = {
                                                 }).catch(error => {
                                                     console.log(error)
                                                 })
-                                          
+
                                         }
                                     }).catch(error => {
                                         console.log(error)
@@ -178,7 +178,7 @@ module.exports = {
                         console.log(error)
                     })
             }
-        } else if (city) {
+        } else if (city && !time) {
             return weather.get({
                 city: city,
                 key: config.weatherApiKey,
@@ -192,6 +192,7 @@ module.exports = {
                         windDirection: response[0].wind_cdir_full
                     }
 
+
                     agent.add(
                         `Thank you for waiting! The weather in ` + city + ` is currently ` + weatherData.description + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction.`
                     )
@@ -201,7 +202,41 @@ module.exports = {
                     console.log(error)
                 })
 
-        } else {
+        } else if (city && time) { 
+           
+            return weather.get({
+                city: city,
+                key: config.weatherApiKey,
+                method: `forecast/hourly`
+            })
+                .then((response) => {
+                    let weatherData = {}
+                    let timeUnix = moment(time).unix()
+                    let timeReadable = moment(time).format(`hh:mm a`)
+
+                    for (let entry of response) {
+                        if (entry.ts > timeUnix) {                     
+                            weatherData = {
+                                description: entry.weather.description,
+                                temp: entry.temp,
+                                windspeed: entry.wind_spd,
+                                windDirection: entry.wind_cdir_full
+                            }
+                            break
+                        }
+                    }
+                    agent.add(
+                        `The weather in ` + city + ` at ` + timeReadable + ` will be ` + weatherData.description
+                    )
+
+                    
+
+                }).catch(error => {
+                    console.log(error)
+                })
+        }
+
+        else {
             agent.add(
                 `I will need more information to go by. Please ask again with a flight number or a city of your choice. Thank you!`
             )
