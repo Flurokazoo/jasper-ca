@@ -3,9 +3,9 @@
  * Fulfillment: default
  */
 const axios = require('axios')
-const config = require('../config')
+const config = require('../../config')
 const moment = require('moment')
-const weather = require('../weather')
+const weather = require('../../weather')
 module.exports = {
 
     fulfillment: function (agent) {
@@ -27,7 +27,7 @@ module.exports = {
                 //Get data regarding the provided flight number            
                 return axios.get(`http://aviation-edge.com/v2/public/flights?key=` + config.flightApiKey + `&flightIata=` + flightNoFormatted)
                     .then((response) => {
-                        
+
                         //Code to be executed when no match can found for flight number
                         if (response.data.error) {
                             agent.add(
@@ -35,7 +35,7 @@ module.exports = {
                             )
                         } else {
                             //Declaration of variable for the IATA number of an airport (this acts as a unique identifier)
-                            let iataAirport, airportName    
+                            let iataAirport, airportName
                             let latLng = {}
 
 
@@ -62,7 +62,7 @@ module.exports = {
                                         }
                                         //Add weather response to the agent
                                         agent.add(
-                                            `Thank you for waiting! The weather for your current location is ` + weatherData.description + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction.`
+                                            `Thank you for waiting! The weather for your current location is ` + weatherData.description + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction. What else can I do for you?`
                                         )
 
                                     }).catch(error => {
@@ -90,65 +90,73 @@ module.exports = {
                                         latLng.latitude = response.data[0].latitudeAirport
                                         latLng.longitude = response.data[0].longitudeAirport
 
-                                        //This triggers is weather is to be searched for destination airport
+                                        //This triggers if weather is to be searched for destination airport
                                         if (location == `arrival`) {
                                             return axios.get(`http://aviation-edge.com/v2/public/timetable?key=` + config.flightApiKey + `&iataCode=` + iataAirport + `&type=arrival&flight_iata=` + flightNoFormatted)
                                                 .then((response) => {
-                                                    //Create variables for time and a readable time reference for return in the agent
-                                                    let timeUnix, localTimeReadable
-                                                    let weatherData = {}
-                                                    //Create unix timestamp from the scheduled arrival time
-                                                    timeUnix = moment(response.data[0].arrival.scheduledTime).unix()
+                                                    //Fallback if the flight does not appear on the airport register. It is rare, but can happen.
+                                                    if (response.data.error) {
+                                                        agent.add(
+                                                            `I'm sorry, but it looks like this flight is not registered at the destination airport yet. I can't get the info, so sorry...`
+                                                        )
+                                                    } else {
+                                                        //Create variables for time and a readable time reference for return in the agent
+                                                        let timeUnix, localTimeReadable
+                                                        let weatherData = {}
+                                                        //Create unix timestamp from the scheduled arrival time
+                                                        timeUnix = moment(response.data[0].arrival.scheduledTime).unix()
 
-                                                    /**
-                                                     * Since the flight API gives back time data without including the difference for UTC time (which we need for creating an accurate timestamp)
-                                                     * we want to offset the 'wrong' timestamp by the offset hours times 3600 (the amount of seconds in an hour).
-                                                     * 
-                                                     * Following that, we need to turn a '+' number to a '-'number and vice-versa. For example if the offset is 5 hours we need return -5 hours to
-                                                     * bring the timestamp back to its correct value.
-                                                     */
+                                                        /**
+                                                         * Since the flight API gives back time data without including the difference for UTC time (which we need for creating an accurate timestamp)
+                                                         * we want to offset the 'wrong' timestamp by the offset hours times 3600 (the amount of seconds in an hour).
+                                                         * 
+                                                         * Following that, we need to turn a '+' number to a '-'number and vice-versa. For example if the offset is 5 hours we need return -5 hours to
+                                                         * bring the timestamp back to its correct value.
+                                                         */
 
-                                                    if (offset > 0) {
-                                                        offset = -Math.abs(offset * 3600)
-                                                    } else if (offset < 0) {
-                                                        offset = Math.abs(offset * 3600)
+                                                        if (offset > 0) {
+                                                            offset = -Math.abs(offset * 3600)
+                                                        } else if (offset < 0) {
+                                                            offset = Math.abs(offset * 3600)
+                                                        }
+
+                                                        //Sets the timestamp to a readable format
+                                                        localTimeReadable = moment(timeUnix * 1000).format(`hh:mm a`)
+
+                                                        //Offsets timeUnix by the right amount
+                                                        timeUnix = timeUnix + offset
+
+                                                        //Makes a call to external weather function with parameters
+                                                        return weather.get({
+                                                            lat: latLng.latitude,
+                                                            lon: latLng.longitude,
+                                                            key: config.weatherApiKey,
+                                                            method: `forecast/hourly`
+                                                        })
+                                                            .then((response) => {
+                                                                //A large set of weather data is returned, we need to see which timestamp best matches our own given timestamp by looping through them
+                                                                for (let entry of response) {
+                                                                    if (entry.ts > timeUnix) {
+                                                                        weatherData = {
+                                                                            description: entry.weather.description,
+                                                                            temp: entry.temp,
+                                                                            windspeed: entry.wind_spd,
+                                                                            windDirection: entry.wind_cdir_full
+                                                                        }
+
+                                                                        //Break when the correct timestamp is found
+                                                                        break
+                                                                    }
+                                                                }
+                                                                //Add weather response to the agent
+                                                                agent.add(
+                                                                    `Thank you for waiting! The weather for flight ` + flightNo + ` will be ` + weatherData.description + ` with ` + weatherData.temp + ` degrees when you land at ` + airportName + ` at ` + localTimeReadable + ` local time. Please enjoy the rest of your flight! What else can I do for you?`
+                                                                )
+                                                            }).catch(error => {
+                                                                console.log(error)
+                                                            })
                                                     }
 
-                                                    //Sets the timestamp to a readable format
-                                                    localTimeReadable = moment(timeUnix * 1000).format(`hh:mm a`)
-
-                                                    //Offsets timeUnix by the right amount
-                                                    timeUnix = timeUnix + offset
-
-                                                    //Makes a call to external weather function with parameters
-                                                    return weather.get({
-                                                        lat: latLng.latitude,
-                                                        lon: latLng.longitude,
-                                                        key: config.weatherApiKey,
-                                                        method: `forecast/hourly`
-                                                    })
-                                                        .then((response) => {
-                                                            //A large set of weather data is returned, we need to see which timestamp best matches our own given timestamp by looping through them
-                                                            for (let entry of response) {
-                                                                if (entry.ts > timeUnix) {
-                                                                    weatherData = {
-                                                                        description: entry.weather.description,
-                                                                        temp: entry.temp,
-                                                                        windspeed: entry.wind_spd,
-                                                                        windDirection: entry.wind_cdir_full
-                                                                    }
-
-                                                                    //Break when the correct timestamp is found
-                                                                    break
-                                                                }
-                                                            }
-                                                            //Add weather response to the agent
-                                                            agent.add(
-                                                                `Thank you for waiting! The weather for flight ` + flightNo + ` will be ` + weatherData.description + ` with ` + weatherData.temp + ` degrees when you land at ` + airportName + ` at ` + localTimeReadable + ` local time. Please enjoy the rest of your flight!`
-                                                            )
-                                                        }).catch(error => {
-                                                            console.log(error)
-                                                        })
                                                 }).catch(error => {
                                                     console.log(error)
                                                 })
@@ -174,7 +182,7 @@ module.exports = {
 
                                                     //Add weather response to the agent
                                                     agent.add(
-                                                        `Thank you for waiting! The weather at ` + airportName + ` at which flight ` + flightNo + ` departed at is currently ` + weatherData.description + `with ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` with a direction of ` + weatherData.windDirection
+                                                        `Thank you for waiting! The weather at ` + airportName + ` at which flight ` + flightNo + ` departed at is currently ` + weatherData.description + `with ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` with a direction of ` + weatherData.windDirection + `. What else can I do for you?`
                                                     )
 
                                                 }).catch(error => {
@@ -214,7 +222,7 @@ module.exports = {
 
                     //Add weather response to the agent
                     agent.add(
-                        `Thank you for waiting! The weather in ` + city + ` is currently ` + weatherData.description + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction.`
+                        `Thank you for waiting! The weather in ` + city + ` is currently ` + weatherData.description + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction. What else can I do for you?`
                     )
 
 
@@ -253,7 +261,7 @@ module.exports = {
                     }
                     //Add weather response to the agent
                     agent.add(
-                        `The weather in ` + city + ` at ` + timeReadable + ` will be ` + weatherData.description + ` with a temperature of ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` from a ` + weatherData.windDirection + ` direction.`
+                        `The weather in ` + city + ` at ` + timeReadable + ` will be ` + weatherData.description + ` with a temperature of ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` from a ` + weatherData.windDirection + ` direction. What else can I do for you?`
                     )
 
                 }).catch(error => {

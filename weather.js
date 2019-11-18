@@ -2,6 +2,10 @@ const axios = require('axios')
 
 
 module.exports = {
+    /**
+     * Gets data from the weather API, either by city or latitude and longitude
+     * @param {*} data 
+     */
     get: function (data) {
         let url
         if(data.city){
@@ -12,6 +16,7 @@ module.exports = {
         }
         return axios.get(url)
             .then((response) => {
+                //Returns the response
                 return(response.data.data)
                 
             }).catch(error =>{

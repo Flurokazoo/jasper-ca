@@ -8,9 +8,9 @@ const app = express()
  */
 const f_welcome = require('./fulfillments/default/welcome')
 const f_fallback = require('./fulfillments/default/fallback')
-const f_weather = require('./fulfillments/weather')
-const f_altitude = require('./fulfillments/altitude')
-const f_destination = require('./fulfillments/destination')
+const f_weather = require('./fulfillments/custom/weather')
+const f_altitude = require('./fulfillments/custom/altitude')
+const f_destination = require('./fulfillments/custom/destination')
 
 
 // Todo: create and require a fulfillment module for each custom intent
@@ -30,9 +30,6 @@ app.post('/', express.json(), (req, res) => {
   intentMap.set('Check altitude', f_altitude.fulfillment)
   intentMap.set('Check destination', f_destination.fulfillment)
 
-
-  // Todo: connect each custom intent with custom fulfillment modules
-  // Hint: create a intent in Dialogflow first
 
   // Connect the agent to the intent map
   agent.handleRequest(intentMap)
