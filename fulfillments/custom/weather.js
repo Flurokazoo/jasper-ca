@@ -62,7 +62,7 @@ module.exports = {
                                         }
                                         //Add weather response to the agent
                                         agent.add(
-                                            `Thank you for waiting! The weather for your current location is ` + weatherData.description + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction. What else can I do for you?`
+                                            `Thank you for waiting! The weather for your current location is ` + weatherData.description.toLowerCase() + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction. What else can I do for you?`
                                         )
 
                                     }).catch(error => {
@@ -150,7 +150,7 @@ module.exports = {
                                                                 }
                                                                 //Add weather response to the agent
                                                                 agent.add(
-                                                                    `Thank you for waiting! The weather for flight ` + flightNo + ` will be ` + weatherData.description + ` with ` + weatherData.temp + ` degrees when you land at ` + airportName + ` at ` + localTimeReadable + ` local time. Please enjoy the rest of your flight! What else can I do for you?`
+                                                                    `Thank you for waiting! The weather for flight ` + flightNo + ` will be ` + weatherData.description.toLowerCase() + ` with ` + weatherData.temp + ` degrees when you land at ` + airportName + ` at ` + localTimeReadable + ` local time. Please enjoy the rest of your flight! What else can I do for you?`
                                                                 )
                                                             }).catch(error => {
                                                                 console.log(error)
@@ -182,7 +182,7 @@ module.exports = {
 
                                                     //Add weather response to the agent
                                                     agent.add(
-                                                        `Thank you for waiting! The weather at ` + airportName + ` at which flight ` + flightNo + ` departed at is currently ` + weatherData.description + `with ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` with a direction of ` + weatherData.windDirection + `. What else can I do for you?`
+                                                        `Thank you for waiting! The weather at ` + airportName + ` at which flight ` + flightNo + ` departed at is currently ` + weatherData.description.toLowerCase() + `with ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` with a direction of ` + weatherData.windDirection + `. What else can I do for you?`
                                                     )
 
                                                 }).catch(error => {
@@ -222,7 +222,7 @@ module.exports = {
 
                     //Add weather response to the agent
                     agent.add(
-                        `Thank you for waiting! The weather in ` + city + ` is currently ` + weatherData.description + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction. What else can I do for you?`
+                        `Thank you for waiting! The weather in ` + city + ` is currently ` + weatherData.description.toLowerCase() + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction. What else can I do for you?`
                     )
 
 
@@ -261,7 +261,7 @@ module.exports = {
                     }
                     //Add weather response to the agent
                     agent.add(
-                        `The weather in ` + city + ` at ` + timeReadable + ` will be ` + weatherData.description + ` with a temperature of ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` from a ` + weatherData.windDirection + ` direction. What else can I do for you?`
+                        `The weather in ` + city + ` at ` + timeReadable + ` will be ` + weatherData.description.toLowerCase() + ` with a temperature of ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` from a ` + weatherData.windDirection + ` direction. What else can I do for you?`
                     )
 
                 }).catch(error => {
