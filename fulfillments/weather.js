@@ -226,10 +226,8 @@ module.exports = {
                         }
                     }
                     agent.add(
-                        `The weather in ` + city + ` at ` + timeReadable + ` will be ` + weatherData.description
-                    )
-
-                    
+                        `The weather in ` + city + ` at ` + timeReadable + ` will be ` + weatherData.description + ` with a temperature of ` + weatherData.temp + ` degrees. The windspeed is ` + weatherData.windspeed + ` from a ` + weatherData.windDirection + ` direction.`
+                    )                    
 
                 }).catch(error => {
                     console.log(error)

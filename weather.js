@@ -6,7 +6,7 @@ module.exports = {
         let url
         if(data.city){
             url = `http://api.weatherbit.io/v2.0/` + data.method + `?city=` + data.city + `&key=` + data.key
-            console.log(url)
+           
         } else if (data.lat && data.lon){
             url = `http://api.weatherbit.io/v2.0/` + data.method + `?lat=` + data.lat + `&lon=` + data.lon + `&key=` + data.key
         }
@@ -15,7 +15,7 @@ module.exports = {
                 return(response.data.data)
                 
             }).catch(error =>{
-                //console.log(error)
+                console.log(error)
             })
     }    
 }
