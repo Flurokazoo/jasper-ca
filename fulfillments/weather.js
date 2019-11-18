@@ -29,7 +29,7 @@ module.exports = {
                     .then((response) => {
 
                         //Declaration of variable for the IATA number of an airport (this acts as a unique identifier)
-                        let iataAirport
+                        let iataAirport, airportName
                         //Declaration of variable for the type of weather method (either future prediction current)
                         let weatherMethod
 
@@ -60,6 +60,7 @@ module.exports = {
                             return axios.get(`https://aviation-edge.com/v2/public/airportDatabase?key=` + config.flightApiKey + `&codeIataAirport=` + iataAirport)
                                 .then((response) => {
                                     let offset = parseInt(response.data[0].GMT)
+                                    airportName = response.data[0].nameAirport
 
                                     //Set latitude and longitude for airport
                                     latLng.latitude = response.data[0].latitudeAirport
@@ -67,14 +68,19 @@ module.exports = {
                                     if (location == `arrival`) {
                                         return axios.get(`http://aviation-edge.com/v2/public/timetable?key=` + config.flightApiKey + `&iataCode=` + iataAirport + `&type=arrival&flight_iata=` + flightNoFormatted)
                                             .then((response) => {
-                                                let time
+
+                                                let time, localTimeReadable
+                                                let weatherData = {}
                                                 time = moment(response.data[0].arrival.scheduledTime).unix()
-                                                if(offset > 0){
+
+                                                if (offset > 0) {
                                                     offset = -Math.abs(offset * 3600)
-                                                } else if(offset < 0) {
+                                                } else if (offset < 0) {
                                                     offset = Math.abs(offset * 3600)
                                                 }
-                                     
+                                                localTimeReadable = moment(time * 1000).format(`hh:mm a`)
+                                                time = time + offset
+
                                                 return weather.get({
                                                     lat: latLng.latitude,
                                                     lon: latLng.longitude,
@@ -83,19 +89,32 @@ module.exports = {
                                                 })
                                                     .then((response) => {
                                                         let weatherItems = {}
-                                                        agent.add(
-                                                            `http://aviation-edge.com/v2/public/timetable?key=` + config.flightApiKey + `&iataCode=` + iataAirport + `&type=arrival&flight_iata=` + flightNoFormatted
-                                                        )
+                                                        
+
+
 
                                                         for (let entry of response) {
                                                             //console.log(entry.ts)
-                                                          }
+                                                            if (entry.ts > time) {
+                                                                weatherData = {
+                                                                    description: entry.weather.description,
+                                                                    temp: entry.temp,
+                                                                    windspeed: entry.wind_spd,
+                                                                    windDirection: entry.wind_cdir_full
+                                                                }
+                                                                break
+                                                            }
+                                                        }
+
+                                                        console.log(weatherData)
+                                                        agent.add(
+                                                            `Thank you for waiting! The weather for flight ` + flightNo + ` will be ` + weatherData.description + ` with ` + weatherData.temp + ` degrees when you land at ` + airportName + ` at ` + localTimeReadable + ` local time. Please enjoy the rest of your flight!`
+                                                        )
+
+
                                                     }).catch(error => {
                                                         console.log(error)
                                                     })
-                                                //flightData = response.data.title
-                                                // console.log(moment(response.data[0].arrival.estimatedTime).unix())
-                                                // console.log(moment())
                                             }).catch(error => {
                                                 console.log(error)
                                             })
