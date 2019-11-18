@@ -8,7 +8,7 @@ module.exports = {
     fulfillment: function (agent) {
         
         agent.add(
-            `Welkom bij de Ciphix Conversational Automation Case!`
+            `Hello pilot! My name is Smith and I'll be your assistent today. What can I do for you?`
         )
 
     }
