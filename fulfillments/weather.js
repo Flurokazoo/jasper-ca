@@ -128,9 +128,28 @@ module.exports = {
                     })
             }
         } else if (city) {
-            agent.add(
-                `ADD WEATHER BY CITY`
-            )
+            return weather.get({
+                city: city,
+                key: config.weatherApiKey,
+                method: `current`
+            })
+                .then((response) => {
+                    const weatherData = {
+                        description: response[0].weather.description,
+                        temp: response[0].temp,
+                        windspeed: response[0].wind_spd,
+                        windDirection: response[0].wind_cdir_full
+                    }
+
+                    agent.add(
+                        `Thank you for waiting! The weather in ` + city + ` is currently ` + weatherData.description + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction.`
+                    )
+
+
+                }).catch(error => {
+                    console.log(error)
+                })
+
         } else {
             agent.add(
                 `I will need more information to go by. Please ask again with a flight number or a city of your choice. Thank you!`
