@@ -94,7 +94,6 @@ module.exports = {
 
 
                                                         for (let entry of response) {
-                                                            //console.log(entry.ts)
                                                             if (entry.ts > time) {
                                                                 weatherData = {
                                                                     description: entry.weather.description,
@@ -106,7 +105,6 @@ module.exports = {
                                                             }
                                                         }
 
-                                                        console.log(weatherData)
                                                         agent.add(
                                                             `Thank you for waiting! The weather for flight ` + flightNo + ` will be ` + weatherData.description + ` with ` + weatherData.temp + ` degrees when you land at ` + airportName + ` at ` + localTimeReadable + ` local time. Please enjoy the rest of your flight!`
                                                         )
@@ -118,20 +116,15 @@ module.exports = {
                                             }).catch(error => {
                                                 console.log(error)
                                             })
+                                    } else if (location == `departure`) {
+                                        agent.add(
+                                            `ORIGIN OF FLIGHT + CURRENT WEATHER HERE`
+                                        )
                                     }
                                 }).catch(error => {
                                     console.log(error)
                                 })
-                        }
-
-                        // return axios.get(`http://api.weatherbit.io/v2.0/current?lat=` + latLng.latitude + `&lon=` + latLng.longitude)
-                        //     .then((response) => {
-                        //         //flightData = response.data.title
-                        //         console.log(response.data)
-                        //         agent.add(
-                        //             `Latitude: ` + latLng.latitude + `, Longitude: ` + latLng.longitude
-                        //         )
-                        //     })
+                        }              
 
                     }).catch(error => {
                         console.log(error)
