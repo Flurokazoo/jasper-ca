@@ -10,6 +10,7 @@ const f_welcome = require('./fulfillments/default/welcome')
 const f_fallback = require('./fulfillments/default/fallback')
 const f_weather = require('./fulfillments/weather')
 const f_altitude = require('./fulfillments/altitude')
+const f_destination = require('./fulfillments/destination')
 
 
 // Todo: create and require a fulfillment module for each custom intent
@@ -27,6 +28,8 @@ app.post('/', express.json(), (req, res) => {
   intentMap.set('Default Fallback Intent', f_fallback.fulfillment)
   intentMap.set('Check weather', f_weather.fulfillment)
   intentMap.set('Check altitude', f_altitude.fulfillment)
+  intentMap.set('Check destination', f_destination.fulfillment)
+
 
   // Todo: connect each custom intent with custom fulfillment modules
   // Hint: create a intent in Dialogflow first
