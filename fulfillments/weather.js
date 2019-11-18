@@ -89,9 +89,6 @@ module.exports = {
                                                 })
                                                     .then((response) => {
                                                         let weatherItems = {}
-                                                        
-
-
 
                                                         for (let entry of response) {
                                                             if (entry.ts > time) {
@@ -124,12 +121,20 @@ module.exports = {
                                 }).catch(error => {
                                     console.log(error)
                                 })
-                        }              
+                        }
 
                     }).catch(error => {
                         console.log(error)
                     })
             }
+        } else if (city) {
+            agent.add(
+                `ADD WEATHER BY CITY`
+            )
+        } else {
+            agent.add(
+                `I will need more information to go by. Please ask again with a flight number or a city of your choice. Thank you!`
+            )
         }
     }
 
