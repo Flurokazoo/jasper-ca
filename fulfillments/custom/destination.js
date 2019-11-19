@@ -41,12 +41,12 @@ module.exports = {
                             }).catch(error => {
                                 console.log(error)
                             })
-
                     }
 
                 }).catch(error => {
                     console.log(error)
                 })
+                
             /**
               * This runs if no flight number is provided
               */

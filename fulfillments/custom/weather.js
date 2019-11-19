@@ -34,10 +34,10 @@ module.exports = {
                                 `I'm sorry, but it looks like that flight is not registered. Please ask my again with a valid flight number or city`
                             )
                         } else {
+
                             //Declaration of variable for the IATA number of an airport (this acts as a unique identifier)
                             let iataAirport, airportName
                             let latLng = {}
-
 
                             //Determine the asked location of the user: Departure airport, arrival airport or the current location of the flight
                             if (location == `current location`) {
@@ -53,6 +53,7 @@ module.exports = {
                                     method: `forecast/hourly`
                                 })
                                     .then((response) => {
+
                                         //Fills weatherData with data returned from the function
                                         const weatherData = {
                                             description: response[0].weather.description,
@@ -60,6 +61,7 @@ module.exports = {
                                             windspeed: response[0].wind_spd,
                                             windDirection: response[0].wind_cdir_full
                                         }
+
                                         //Add weather response to the agent
                                         agent.add(
                                             `Thank you for waiting! The weather for your current location is ` + weatherData.description.toLowerCase() + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction. What else can I do for you?`
@@ -68,7 +70,6 @@ module.exports = {
                                     }).catch(error => {
                                         console.log(error)
                                     })
-
 
                             } else {
 
@@ -134,6 +135,7 @@ module.exports = {
                                                             method: `forecast/hourly`
                                                         })
                                                             .then((response) => {
+
                                                                 //A large set of weather data is returned, we need to see which timestamp best matches our own given timestamp by looping through them
                                                                 for (let entry of response) {
                                                                     if (entry.ts > timeUnix) {
@@ -224,7 +226,6 @@ module.exports = {
                     agent.add(
                         `Thank you for waiting! The weather in ` + city + ` is currently ` + weatherData.description.toLowerCase() + `. It is ` + weatherData.temp + ` degrees with a windspeed of ` + weatherData.windspeed + ` in a ` + weatherData.windDirection + ` direction. What else can I do for you?`
                     )
-
 
                 }).catch(error => {
                     console.log(error)

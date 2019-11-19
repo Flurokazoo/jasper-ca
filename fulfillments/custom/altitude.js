@@ -14,6 +14,7 @@ module.exports = {
         /**
          * This runs if a flight number is provided
          */
+
         if (flightNo) {
             //Search flight by its IATA flight number
             return axios.get(`http://aviation-edge.com/v2/public/flights?key=` + config.flightApiKey + `&flightIata=` + flightNoFormatted)
@@ -31,13 +32,14 @@ module.exports = {
                             `Our current altitude is ` + altitude + ` feet. Happy flight!`
                         )
                     }
-
                 }).catch(error => {
                     console.log(error)
                 })
+                
             /**
             * This runs if no flight number is provided
             */
+           
         } else {
             agent.add(
                 `I'm sorry, but I need to know our flight number to fulfill this request.`
